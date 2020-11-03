@@ -1,14 +1,17 @@
 /* Created by MajorGamerJay under the MIT licenese
+ *
  * This is the solution to an exercise in
- * "The C Programming Language" - Brian Kernighan and Dennis Ritchie
- * on chapter 1, 1.10 - External Variables
- * Exercise 1-24.
+ * - The C Programming Language - Brian Kernighan and Dennis Ritchie
+ * - on chapter 1, 1.10 - External Variables
+ * - Exercise 1-24.
+ *
  */
 
 #include <stdio.h>
 
 #define MAXCHARS 100000
 
+/* Defining external variables here */
 char line[MAXCHARS];
 
 int brackets_state;
@@ -26,14 +29,16 @@ int quotes_single_errlines_c;
 int quotes_double_state;
 int quotes_double_errlines_c;
 
-get_stream();
+/* Defining external functions */
+get_stream(); /* will get the stream from STDIN and save it in an array */
 void print_err(char err_msg[], int nest, int line);
+/* Checks whether the desired character is unmatched or not */
 check_if_in_quotes(char check, int pos);
-check_brackets(int errlines[]);
-check_parenthesis(int errlines[]);
-check_braces(int errlines[]);
-check_quotes_single(int errlines[]);
-check_quotes_double(int errlines[]);
+check_brackets(unsigned int errlines[]);
+check_parenthesis(unsigned int errlines[]);
+check_braces(unsigned int errlines[]);
+check_quotes_single(unsigned int errlines[]);
+check_quotes_double(unsigned int errlines[]);
 
 main()
 {
@@ -48,20 +53,22 @@ main()
     extern int quotes_double_state;
     extern int quotes_double_errlines_c;
 
-    int bracket_errlines[20];
-    int parenthesis_errlines[20];
-    int braces_errlines[20];
-    int quotes_single_errlines[20];
-    int quotes_double_errlines[20];
+    unsigned int bracket_errlines[20];
+    unsigned int parenthesis_errlines[20];
+    unsigned int braces_errlines[20];
+    unsigned int quotes_single_errlines[20];
+    unsigned int quotes_double_errlines[20];
 
-    int total_chr         = get_stream();
+    int total_chr         = get_stream(); /* Total character returned by getstream() */
+    /* Given integers below stores 0 (false) or 1 (true) for unmatched characters */
     int bad_bracket       = check_brackets(bracket_errlines);
     int bad_parenth       = check_parenthesis(parenthesis_errlines);
     int bad_braces        = check_braces(braces_errlines);
     int bad_quotes_single = check_quotes_single(quotes_single_errlines);
     int bad_quotes_double = check_quotes_double(quotes_double_errlines);
 
-    // printf("Bracket tests 1: %d\n", bracket_errlines[0]); Produces garbage
+    /* printf("Bracket tests 1: %d\n", bracket_errlines[0]); Produces garbage */
+    /* This line is a joke, please do not take it seriously. */
     printf("Hey shitass! Wanna code for real?\n");
     printf("---------------------------------\n");
     printf("Total characters: %d\n", total_chr);
@@ -72,6 +79,7 @@ main()
      * weird and should be taken note of
      */
 
+    /* Checks matches, collects data, prints error */
     if(bad_bracket != 0)
         for(int i = 1; i < brackets_errlines_c; ++i)
             if(bracket_errlines[i] != 0)
@@ -111,6 +119,7 @@ void print_err(char err_msg[], int nest, int line)
     printf("On line: %d, Total unclosed: %d, Comment: %s\n", line, nest, err_msg);
 }
 
+/* See whether the character for checking is within quotes(double quotes or not) */
 check_if_in_quotes(char check, int pos)
 {
     /* state 0 = out
@@ -128,13 +137,21 @@ check_if_in_quotes(char check, int pos)
             state = 0;
         else {
             if(state == 1 && line[pos] == check)
-                ignore = 1;
+                ignore = 1; /* character is within double quotes */
         }
     }
-    return ignore;
+    return ignore; /* character is not in double quotes if above is false */
 }
 
-check_brackets(int errlines[])
+/* Here, the functions for checking unmatched characters are written.
+ * All follows the same pattern except check_quotes_double().
+ * Returns 1 if unmatched are found and 0 otherwise.
+ * <character>_state contains number of umatched characters.
+ * errlines[] contains the array of lines at which the unmatched character
+ * is found and <character>_errlines_c contains the counts of the characters.
+ */
+
+check_brackets(unsigned int errlines[])
 {
     extern char line[];
     extern int brackets_state;
@@ -171,7 +188,7 @@ check_brackets(int errlines[])
         return 0;
 }
 
-check_parenthesis(int errlines[])
+check_parenthesis(unsigned int errlines[])
 {
     extern char line[];
     extern int parenthesis_state;
@@ -208,7 +225,7 @@ check_parenthesis(int errlines[])
         return 0;
 }
 
-check_braces(int errlines[])
+check_braces(unsigned int errlines[])
 {
     extern char line[];
     extern int braces_state;
@@ -245,7 +262,7 @@ check_braces(int errlines[])
         return 0;
 }
 
-check_quotes_single(int errlines[])
+check_quotes_single(unsigned int errlines[])
 {
     extern char line[];
     extern int quotes_single_state;
@@ -282,7 +299,11 @@ check_quotes_single(int errlines[])
         return 0;
 }
 
-check_quotes_double(int errlines[])
+/* This function does not check for double quotes in double quotes
+ * because that would be confusing for the program and may make
+ * unnecessary errors.
+ */
+check_quotes_double(unsigned int errlines[])
 {
     extern char line[];
     extern int quotes_double_state;
@@ -294,14 +315,14 @@ check_quotes_double(int errlines[])
         if(line[i] == '\n')
             ++line_c;
 
-        if(quotes_double_state == 0 && line[i] == '"') {
+        if(quotes_double_state == 0 && line[i] == '\"') {
             ++quotes_double_state;
             errlines[quotes_double_errlines_c] = line_c;
             tmp = quotes_double_errlines_c;
             ++quotes_double_errlines_c;
         }
 
-        else if(quotes_double_state > 0 && line[i] == '"') {
+        else if(quotes_double_state > 0 && line[i] == '\"') {
             --quotes_double_state;
             errlines[tmp] = 0;
             }
